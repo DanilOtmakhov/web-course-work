@@ -1,4 +1,3 @@
-// Chapter 4: user interaction manager (keyboard handling)
 var eventsManager = {
   bind: {},
   action: {},
@@ -7,15 +6,15 @@ var eventsManager = {
     this.bind[37] = "moveLeft";
     this.bind[39] = "moveRight";
     this.bind[38] = "moveUp";
-    this.bind[40] = "moveDown";  // ArrowDown
-    this.bind[65] = "moveLeft";  // A
-    this.bind[68] = "moveRight"; // D
-    this.bind[87] = "moveUp";    // W
-    this.bind[83] = "moveDown";  // S
-    this.bind[32] = "jump";      // Space
-    this.bind[80] = "pause";     // P
-    this.bind[13] = "start";     // Enter
-    this.bind[77] = "mute";      // M
+    this.bind[40] = "moveDown";
+    this.bind[65] = "moveLeft";
+    this.bind[68] = "moveRight";
+    this.bind[87] = "moveUp";
+    this.bind[83] = "moveDown";
+    this.bind[32] = "jump";
+    this.bind[80] = "pause";
+    this.bind[13] = "start";
+    this.bind[77] = "mute";
 
     var self = this;
     document.body.addEventListener("keydown", function (ev) {

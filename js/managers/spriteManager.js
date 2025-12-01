@@ -1,4 +1,3 @@
-// Sprite manager from Belyaev chapter 3 (atlas loading and sprite drawing)
 var spriteManager = {
   image: new Image(),
   sprites: [],
@@ -9,7 +8,6 @@ var spriteManager = {
   _loadedImages: 0,
   _loadedJson: 0,
 
-  // Section 3: load atlas JSON and corresponding image
   loadAtlas: function (atlasJsonPath, atlasImagePath) {
     this._atlasTotal++;
 
@@ -24,7 +22,6 @@ var spriteManager = {
     request.send();
   },
 
-  // Section 3: load atlas image
   loadImg: function (imgPath, targetImage) {
     var self = this;
     var img = targetImage || this.image;
@@ -37,11 +34,10 @@ var spriteManager = {
     img.src = imgPath;
   },
 
-  // Section 3: parse atlas JSON and remember frames
   parseAtlas: function (atlasJSON, atlasImagePath) {
     var atlas = JSON.parse(atlasJSON);
     var img = new Image();
-    this.image = img; // keep last loaded for compatibility
+    this.image = img;
 
     for (var i = 0; i < atlas.frames.length; i++) {
       var f = atlas.frames[i];
@@ -63,7 +59,6 @@ var spriteManager = {
     this.loadImg(atlasImagePath, img);
   },
 
-  // Section 3: find sprite by name
   getSprite: function (name) {
     for (var i = 0; i < this.sprites.length; i++) {
       var s = this.sprites[i];
@@ -74,7 +69,6 @@ var spriteManager = {
     return null;
   },
 
-  // Section 3: draw sprite with optional flipX and view offset
   drawSprite: function (ctx, name, x, y, flipX) {
     if (!this.imgLoaded || !this.jsonLoaded) {
       var self = this;
@@ -89,7 +83,6 @@ var spriteManager = {
       return;
     }
 
-    // Culling by view rectangle
     if (
       typeof mapManager !== "undefined" &&
       !mapManager.isVisible(x, y, sprite.w, sprite.h)

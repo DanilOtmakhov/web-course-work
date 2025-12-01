@@ -133,7 +133,6 @@ var mapManager = {
     return tile;
   },
 
-  // Tile from specific tilelayer number (0-based among tilelayers)
   getTileAtLayer: function (layerIndex, x, y) {
     if (!this.mapData) {
       return 0;
@@ -211,7 +210,6 @@ var mapManager = {
         var imgY = baseY - this.view.y;
 
         if (layer.repeatx) {
-          // Tile the background horizontally to cover the entire view
           var startX =
             Math.floor((this.view.x - baseX) / img.width) * img.width + baseX;
           for (
@@ -302,12 +300,10 @@ var mapManager = {
             obj.size_x = e.width;
             obj.size_y = e.height;
 
-            // Normalize sizes for sprite frames (player/zombie 32x48)
             if (typeName === "Player" || typeName === "Zombie") {
               var oldHeight = obj.size_y;
               obj.size_x = 32;
               obj.size_y = typeName === "Player" ? 35 : 40;
-              // Keep feet aligned with Tiled object placement
               obj.pos_y -= obj.size_y - oldHeight;
             }
 
@@ -355,7 +351,7 @@ var mapManager = {
       this.view.y = y - this.view.h / 2;
     }
   },
-  
+
   resolvePath: function (resourcePath) {
     if (!resourcePath) {
       return resourcePath;

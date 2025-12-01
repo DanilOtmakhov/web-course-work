@@ -1,4 +1,3 @@
-// Chapter 7: sound manager (loading, playback, distance attenuation, music)
 var soundManager = {
   clips: {},
   context: null,
@@ -151,7 +150,7 @@ var soundManager = {
       var dx = px - x;
       var dy = py - y;
       var dist = Math.sqrt(dx * dx + dy * dy);
-      var maxDist = 600; // radius for attenuation
+      var maxDist = 600;
       volume = Math.max(0, 1 - dist / maxDist);
     }
     this.play(path, { volume: volume });
@@ -176,9 +175,7 @@ var soundManager = {
       for (var i = 0; i < clip.playing.length; i++) {
         try {
           clip.playing[i].stop();
-        } catch (ex) {
-          // ignore stop errors
-        }
+        } catch (ex) {}
       }
       clip.playing = [];
     }

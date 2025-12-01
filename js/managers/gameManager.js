@@ -89,10 +89,10 @@ var gameManager = {
     }
 
     mapManager.loadMap(this.levels[this.currentLevel]);
-    spriteManager.loadAtlas("atlas_player.json", "assets/images/player.png");
-    spriteManager.loadAtlas("atlas_zombie.json", "assets/images/zombie.png");
-    spriteManager.loadAtlas("atlas_cash.json", "assets/images/cash.png");
-    spriteManager.loadAtlas("atlas_adrenaline.json", "assets/images/adrenaline.png");
+    spriteManager.loadAtlas("assets/atlas/atlas_player.json", "assets/images/player.png");
+    spriteManager.loadAtlas("assets/atlas/atlas_zombie.json", "assets/images/zombie.png");
+    spriteManager.loadAtlas("assets/atlas/atlas_cash.json", "assets/images/cash.png");
+    spriteManager.loadAtlas("assets/atlas/atlas_adrenaline.json", "assets/images/adrenaline.png");
     soundManager.init();
     soundManager.loadArray(
       [
@@ -237,7 +237,6 @@ var gameManager = {
       return;
     }
     this.nameInput.classList.remove("shake");
-    // Force reflow to restart animation
     void this.nameInput.offsetWidth;
     this.nameInput.classList.add("shake");
   },
@@ -305,9 +304,15 @@ var gameManager = {
 
     for (var i = 0; i < this.entities.length; i++) {
       var ent = this.entities[i];
-      physicManager.update(ent);
-      if (typeof ent.update === "function") {
-        ent.update();
+      if (ent.type === "Player" || ent.type === "Zombie") {
+        if (typeof ent.update === "function") {
+          ent.update();
+        }
+      } else {
+        physicManager.update(ent);
+        if (typeof ent.update === "function") {
+          ent.update();
+        }
       }
 
       if (ent.type === "Cash" && this.player && this.checkIntersect(this.player, ent)) {
@@ -474,9 +479,7 @@ var gameManager = {
   saveRecords: function () {
     try {
       localStorage.setItem(this.recordsKey, JSON.stringify(this.records));
-    } catch (ex) {
-      // Ignore storage errors (private browsing, etc.)
-    }
+    } catch (ex) {}
   },
 
   sortRecords: function () {

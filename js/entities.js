@@ -58,6 +58,62 @@ var Player = Entity.extend({
   _speedBoostTimer: null,
 
   update: function () {
+    this.move_x = 0;
+    this.move_y = 0;
+
+    if (eventsManager.action.moveLeft) {
+      this.move_x = -1;
+    } else if (eventsManager.action.moveRight) {
+      this.move_x = 1;
+    }
+
+    if (eventsManager.action.moveUp) {
+      this.move_y = -1;
+    } else if (eventsManager.action.moveDown) {
+      this.move_y = 1;
+    }
+
+    var ladderTile = mapManager.getTileAtLayer(
+      3,
+      this.pos_x + this.size_x / 2,
+      this.pos_y + this.size_y / 2
+    );
+    var ladderBelow = mapManager.getTileAtLayer(
+      3,
+      this.pos_x + this.size_x / 2,
+      this.pos_y + this.size_y + 1
+    );
+
+    this.onLadder = ladderTile !== 0;
+    if (!this.onLadder && eventsManager.action.moveDown && ladderBelow !== 0) {
+      this.onLadder = true;
+    }
+
+    if (!this.onLadder) {
+      this.dy = (this.dy || 0) + physicManager.gravity;
+    } else {
+      this.dy = 0;
+    }
+
+    if (eventsManager.action.jump && this.onGround && !this.onLadder) {
+      this.dy = -physicManager.jumpForce;
+      this.onGround = false;
+      this.justJumped = true;
+    }
+
+    physicManager.applyHorizontal(this);
+    physicManager.applyVertical(this);
+
+    if (this.pos_y > mapManager.mapSize.y) {
+      this.kill();
+      return;
+    }
+
+    var enemy = physicManager.entityAtXY(this);
+    if (enemy && enemy.type === "Zombie") {
+      this.kill();
+    }
+
     if (this.justJumped) {
       soundManager.play("assets/sounds/jump.mp3");
       this.justJumped = false;
@@ -120,7 +176,37 @@ var Zombie = Entity.extend({
   },
 
   update: function () {
-    // Movement handled by physicManager
+    var ladderTile = mapManager.getTileAtLayer(
+      3,
+      this.pos_x + this.size_x / 2,
+      this.pos_y + this.size_y / 2
+    );
+    var ladderBelow = mapManager.getTileAtLayer(
+      3,
+      this.pos_x + this.size_x / 2,
+      this.pos_y + this.size_y + 1
+    );
+
+    this.onLadder = ladderTile !== 0;
+    if (!this.onLadder && ladderBelow !== 0) {
+      this.onLadder = true;
+    }
+
+    if (!this.onLadder) {
+      this.dy = (this.dy || 0) + physicManager.gravity;
+    } else {
+      this.dy = 0;
+    }
+
+    physicManager.applyHorizontal(this);
+    physicManager.applyVertical(this);
+
+    if (this.pos_y > mapManager.mapSize.y) {
+      this.kill();
+      return;
+    }
+
+    physicManager.updateZombie(this);
   },
 
   draw: function (ctx) {
@@ -146,7 +232,6 @@ var Zombie = Entity.extend({
   },
 });
 
-// Cash entity (static)
 var Cash = Entity.extend({
   type: "Cash",
   frameIndex: 0,
@@ -167,8 +252,12 @@ var Cash = Entity.extend({
   },
 
   onTouchEntity: function () {
-    soundManager.playWorldSound("assets/sounds/cash.mp3", this.pos_x, this.pos_y);
-  }
+    soundManager.playWorldSound(
+      "assets/sounds/cash.mp3",
+      this.pos_x,
+      this.pos_y
+    );
+  },
 });
 
 // Adrenaline entity (speed booster)
@@ -179,6 +268,10 @@ var Adrenaline = Entity.extend({
   },
 
   onTouchEntity: function () {
-    soundManager.playWorldSound("assets/sounds/adrenaline.mp3", this.pos_x, this.pos_y);
-  }
+    soundManager.playWorldSound(
+      "assets/sounds/adrenaline.mp3",
+      this.pos_x,
+      this.pos_y
+    );
+  },
 });

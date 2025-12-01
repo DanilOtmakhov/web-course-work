@@ -3,25 +3,8 @@ var physicManager = {
   jumpForce: 10,
 
   update: function (obj) {
-    if (obj.type === "Cash") {
+    if (obj.type === "Player" || obj.type === "Zombie" || obj.type === "Cash") {
       return;
-    }
-
-    if (obj.type === "Player") {
-      obj.move_x = 0;
-      obj.move_y = 0;
-
-      if (eventsManager.action.moveLeft) {
-        obj.move_x = -1;
-      } else if (eventsManager.action.moveRight) {
-        obj.move_x = 1;
-      }
-
-      if (eventsManager.action.moveUp) {
-        obj.move_y = -1;
-      } else if (eventsManager.action.moveDown) {
-        obj.move_y = 1;
-      }
     }
 
     var ladderTile = mapManager.getTileAtLayer(
@@ -29,21 +12,8 @@ var physicManager = {
       obj.pos_x + obj.size_x / 2,
       obj.pos_y + obj.size_y / 2
     );
-    var ladderBelow = mapManager.getTileAtLayer(
-      3,
-      obj.pos_x + obj.size_x / 2,
-      obj.pos_y + obj.size_y + 1
-    );
 
     obj.onLadder = ladderTile !== 0;
-    if (
-      !obj.onLadder &&
-      obj.type === "Player" &&
-      eventsManager.action.moveDown &&
-      ladderBelow !== 0
-    ) {
-      obj.onLadder = true;
-    }
 
     if (!obj.onLadder) {
       obj.dy = (obj.dy || 0) + this.gravity;
@@ -51,33 +21,11 @@ var physicManager = {
       obj.dy = 0;
     }
 
-    if (
-      obj.type === "Player" &&
-      eventsManager.action.jump &&
-      obj.onGround &&
-      !obj.onLadder
-    ) {
-      obj.dy = -this.jumpForce;
-      obj.onGround = false;
-      obj.justJumped = true;
-    }
-
     this.applyHorizontal(obj);
     this.applyVertical(obj);
 
     if (obj.pos_y > mapManager.mapSize.y) {
       obj.kill();
-    }
-
-    if (obj.type === "Player") {
-      var enemy = this.entityAtXY(obj);
-      if (enemy && enemy.type === "Zombie") {
-        obj.kill();
-      }
-    }
-
-    if (obj.type === "Zombie") {
-      this.updateZombie(obj);
     }
   },
 
