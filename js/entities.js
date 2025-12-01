@@ -260,7 +260,6 @@ var Cash = Entity.extend({
   },
 });
 
-// Adrenaline entity (speed booster)
 var Adrenaline = Entity.extend({
   type: "Adrenaline",
   draw: function (ctx) {

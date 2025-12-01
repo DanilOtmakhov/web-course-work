@@ -34,17 +34,12 @@
     mapManager.view.w = canvas.width;
     mapManager.view.h = canvas.height;
 
-    requestAnimationFrame(gameLoop);
-  }
-
-  function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    gameManager.update();
-    requestAnimationFrame(gameLoop);
+    gameManager.startLoop();
   }
 
   loadScripts(
     [
+      "js/managers/mapManager.js",
       "js/managers/soundManager.js",
       "js/managers/eventsManager.js",
       "js/managers/spriteManager.js",

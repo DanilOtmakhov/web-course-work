@@ -450,6 +450,22 @@ var gameManager = {
     }
   },
 
+  startLoop: function () {
+    if (!this._boundGameLoop) {
+      this._boundGameLoop = this.gameLoop.bind(this);
+    }
+    requestAnimationFrame(this._boundGameLoop);
+  },
+
+  gameLoop: function () {
+    if (!this.ctx || !this.canvas) {
+      return;
+    }
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.update();
+    requestAnimationFrame(this._boundGameLoop);
+  },
+
   resumeFromPause: function () {
     this.paused = false;
     this.playBackground();
