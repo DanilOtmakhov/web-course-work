@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Park Runner: Cash Escape</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, #243b55, #141e30 60%);
+      color: #f4f4f4;
+      font-family: "Trebuchet MS", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #game-wrapper {
+      position: relative;
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+      border: 4px solid #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      background: #0d1320;
+    }
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      pointer-events: none;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    }
+    #hud strong { color: #ffd700; }
+    #hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      opacity: 0.8;
+      text-align: center;
+      pointer-events: none;
+    }
+    .modal {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(6, 10, 20, 0.7);
+      backdrop-filter: blur(2px);
+      z-index: 10;
+    }
+    .modal-content {
+      background: #0f172a;
+      border: 2px solid #1e293b;
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      padding: 24px 28px;
+      min-width: 280px;
+      text-align: center;
+      max-width: 360px;
+    }
+    .modal h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+    .modal p {
+      margin: 0 0 16px;
+      color: #cbd5e1;
+    }
+    .modal .buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .modal button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #1d4ed8;
+      color: #f8fafc;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+    .modal button:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+    }
+    .modal button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .modal .secondary {
+      background: #475569;
+    }
+    .modal .secondary:hover {
+      background: #64748b;
+    }
+    .modal .records {
+      margin-top: 16px;
+      text-align: left;
+    }
+    .records h3 {
+      text-align: center;
+      margin: 0 0 8px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #cbd5e1;
+    }
+    .records-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background: #0b1220;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .records-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 13px;
+    }
+    .records-list li:last-child {
+      border-bottom: none;
+    }
+    .records-list .record-empty {
+      justify-content: center;
+      color: #94a3b8;
+    }
+    #modal-name {
+      display: flex;
+      z-index: 15;
+    }
+    #modal-name .modal-content {
+      max-width: 400px;
+    }
+    .name-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .name-form input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+      background: #0b1220;
+      color: #e2e8f0;
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease;
+    }
+    .name-form input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    .name-form .input-error {
+      min-height: 16px;
+      color: #fca5a5;
+      font-size: 12px;
+      text-align: left;
+    }
+    .shake {
+      animation: shake 0.3s linear;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-wrapper">
+    <canvas id="game" width="840" height="648"></canvas>
+    <div id="hud">
+      <div id="hud-score">Score: <strong>0</strong></div>
+      <div id="hud-level">Level: <strong>1</strong></div>
+      <div id="hud-state">MENU</div>
+    </div>
+    <div id="hint">Arrows / WASD to move &amp; climb • Space to jump • P to pause</div>
+    <div id="modal-name" class="modal">
+      <div class="modal-content">
+        <h2>Welcome</h2>
+        <form id="name-form" class="name-form">
+          <input id="player-name" type="text" autocomplete="off" placeholder="Username" maxlength="20" />
+          <div id="name-error" class="input-error"></div>
+          <button type="submit">Start</button>
+        </form>
+      </div>
+    </div>
+    <div id="modal-pause" class="modal">
+      <div class="modal-content">
+        <h2>Pause</h2>
+        <div class="buttons">
+          <button id="btn-continue">Continue</button>
+          <button class="secondary" id="btn-quit-pause">Quit</button>
+        </div>
+      </div>
+    </div>
+    <div id="modal-gameover" class="modal">
+      <div class="modal-content">
+        <h2>Game Over</h2>
+        <p>Score: <strong id="modal-score">0</strong></p>
+        <div class="records">
+          <h3>Top Players:</h3>
+          <ul id="records-list" class="records-list">
+            <li class="record-empty">Be the first one</li>
+          </ul>
+        </div>
+        <div class="buttons">
+          <button id="btn-play-again">Play again</button>
+          <button class="secondary" id="btn-quit-over">Quit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/managers/mapManager.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

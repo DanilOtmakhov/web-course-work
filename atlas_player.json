@@ -1,0 +1,14 @@
+{
+  "frames": [
+    { "name": "player_walk_0", "x": 3, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_walk_1", "x": 50, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_walk_2", "x": 97, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_walk_3", "x": 146, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_walk_4", "x": 193, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_walk_5", "x": 242, "y": 13, "w": 32, "h": 35 },
+    { "name": "player_idle_0", "x": 3, "y": 61, "w": 32, "h": 35 },
+    { "name": "player_idle_1", "x": 50, "y": 61, "w": 32, "h": 35 },
+    { "name": "player_idle_2", "x": 97, "y": 61, "w": 32, "h": 35 },
+    { "name": "player_idle_3", "x": 146, "y": 61, "w": 32, "h": 35 }
+  ]
+}

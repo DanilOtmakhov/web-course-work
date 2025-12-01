@@ -1,0 +1,10 @@
+{
+  "frames": [
+    { "name": "zombie_walk_0", "x": 0, "y": 9, "w": 32, "h": 40 },
+    { "name": "zombie_walk_1", "x": 49, "y": 9, "w": 32, "h": 40 },
+    { "name": "zombie_walk_2", "x": 97, "y": 9, "w": 32, "h": 40 },
+    { "name": "zombie_walk_3", "x": 145, "y": 9, "w": 32, "h": 40 },
+    { "name": "zombie_walk_4", "x": 193, "y": 9, "w": 32, "h": 40 },
+    { "name": "zombie_walk_5", "x": 241, "y": 9, "w": 32, "h": 40 }
+  ]
+}
