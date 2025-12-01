@@ -30,9 +30,6 @@ var gameManager = {
   nameForm: null,
   nameInput: null,
   nameErrorEl: null,
-  recordsListEl: null,
-  records: [],
-  recordsKey: "parkRunnerRecords",
   currentLevel: 0,
   levels: ["maps/level1.json", "maps/level2.json"],
 
@@ -45,7 +42,7 @@ var gameManager = {
     this.pauseModal = document.getElementById("modal-pause");
     this.gameOverModal = document.getElementById("modal-gameover");
     this.modalScoreEl = document.getElementById("modal-score");
-    this.recordsListEl = document.getElementById("records-list");
+    var recordsListEl = document.getElementById("records-list");
     this.nameModal = document.getElementById("modal-name");
     this.nameForm = document.getElementById("name-form");
     this.nameInput = document.getElementById("player-name");
@@ -107,9 +104,11 @@ var gameManager = {
       function () {}
     );
 
+    leaderboardManager.init({
+      listEl: recordsListEl,
+      storageKey: "parkRunnerRecords"
+    });
     eventsManager.setup(canvas);
-    this.loadRecords();
-    this.renderRecords();
     this.showNameModal();
   },
 
@@ -432,9 +431,9 @@ var gameManager = {
       this.modalScoreEl.textContent = this.score;
     }
     if (win && this.currentLevel >= this.levels.length - 1) {
-      this.addRecord(this.playerName || "Player", this.score);
+      leaderboardManager.addRecord(this.playerName || "Player", this.score);
     } else {
-      this.renderRecords();
+      leaderboardManager.renderRecords();
     }
     this.updateHud();
     if (this.gameOverModal) {
@@ -455,102 +454,6 @@ var gameManager = {
     this.paused = false;
     this.playBackground();
     this.hideModals();
-  },
-
-  loadRecords: function () {
-    this.records = [];
-    try {
-      var stored = localStorage.getItem(this.recordsKey);
-      if (stored) {
-        var parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          this.records = parsed;
-          this.sortRecords();
-          if (this.records.length > 5) {
-            this.records = this.records.slice(0, 5);
-          }
-        }
-      }
-    } catch (ex) {
-      this.records = [];
-    }
-  },
-
-  saveRecords: function () {
-    try {
-      localStorage.setItem(this.recordsKey, JSON.stringify(this.records));
-    } catch (ex) {}
-  },
-
-  sortRecords: function () {
-    if (!this.records || this.records.length === 0) {
-      return;
-    }
-    this.records.sort(function (a, b) {
-      if (b.score !== a.score) {
-        return b.score - a.score;
-      }
-      return b.ts - a.ts;
-    });
-  },
-
-  addRecord: function (name, score) {
-    var recName = name || "Player";
-    var recScore = score || 0;
-    var existingIdx = -1;
-    for (var i = 0; i < this.records.length; i++) {
-      if (this.records[i].name === recName) {
-        existingIdx = i;
-        break;
-      }
-    }
-    if (existingIdx !== -1) {
-      var existing = this.records[existingIdx];
-      if (existing.score >= recScore) {
-        this.sortRecords();
-        this.renderRecords();
-        return;
-      }
-      this.records.splice(existingIdx, 1);
-    }
-    var record = {
-      name: recName,
-      score: recScore,
-      ts: Date.now()
-    };
-    this.records.unshift(record);
-    this.sortRecords();
-    if (this.records.length > 5) {
-      this.records = this.records.slice(0, 5);
-    }
-    this.saveRecords();
-    this.renderRecords();
-  },
-
-  renderRecords: function () {
-    if (!this.recordsListEl) {
-      return;
-    }
-    this.sortRecords();
-    this.recordsListEl.innerHTML = "";
-    if (!this.records || this.records.length === 0) {
-      var emptyEl = document.createElement("li");
-      emptyEl.className = "record-empty";
-      emptyEl.textContent = "No records yet";
-      this.recordsListEl.appendChild(emptyEl);
-      return;
-    }
-    for (var i = 0; i < this.records.length; i++) {
-      var rec = this.records[i];
-      var row = document.createElement("li");
-      var nameSpan = document.createElement("span");
-      nameSpan.textContent = (i + 1) + ". " + rec.name;
-      var scoreSpan = document.createElement("span");
-      scoreSpan.textContent = rec.score;
-      row.appendChild(nameSpan);
-      row.appendChild(scoreSpan);
-      this.recordsListEl.appendChild(row);
-    }
   },
 
   restartGame: function () {

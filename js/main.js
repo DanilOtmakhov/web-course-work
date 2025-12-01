@@ -50,6 +50,7 @@
       "js/managers/spriteManager.js",
       "js/entities.js",
       "js/managers/physicManager.js",
+      "js/managers/leaderboardManager.js",
       "js/managers/gameManager.js"
     ],
     function () {
